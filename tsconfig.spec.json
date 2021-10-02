@@ -1,0 +1,14 @@
+{
+  "extends": "./node_modules/@codewyre/typescript-preset/cli-app/tsconfig.spec.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./.build",
+    "types": [
+      "node",
+      "jasmine"
+    ]
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}

@@ -1,0 +1,11 @@
+# Build & Test artifacts
+.build
+dist
+.nyc_output
+
+# Log files
+yarn-error.log
+
+# Downloaded artifacts & packages
+node_modules
+

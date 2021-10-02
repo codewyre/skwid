@@ -1,0 +1,28 @@
+{
+  "name": "@codewyre/skwid",
+  "version": "1.0.0",
+  "description": "A CLI that enables you to easily set up tasks and operations",
+  "main": "index.js",
+  "private": "true",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.app.json",
+    "lint": "tslint --project tsconfig.app.json",
+    "test": "jasmine-ts --config=jasmine.config.js",
+    "coverage": "nyc  -x \"*.spec.ts\" -x \"jasmine.config.js\" yarn test"
+  },
+  "devDependencies": {
+    "@codewyre/jasmine-preset": "^1.0.0",
+    "@codewyre/tslint-preset": "1.0.0",
+    "@codewyre/typescript-preset": "1.0.0",
+    "@types/jasmine": "^3.9.1",
+    "@types/node": "^16.10.2",
+    "jasmine": "^3.9.0",
+    "tslint": "6.1.3",
+    "typescript": "^4.4.3",
+    "jasmine-spec-reporter": "7.0.0",
+    "ts-node": "10.2.1",
+    "jasmine-ts": "0.4.0",
+    "nyc": "15.1.0"
+  }
+}
