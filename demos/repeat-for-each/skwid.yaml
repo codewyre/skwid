@@ -1,0 +1,21 @@
+variables:
+  list:
+    - Sam
+    - Max
+    - Will
+
+tasks:
+  run-sample:
+    jobs:
+      - name: Print all names
+        type: repeat
+
+        forEach: name
+        of: ${list}
+        index: i
+
+        jobs:
+          - name: Print name
+            type: command
+            command: echo ${i} - ${name}
+

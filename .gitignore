@@ -2,6 +2,7 @@
 .build
 dist
 .nyc_output
+.history
 
 # Log files
 yarn-error.log

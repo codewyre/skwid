@@ -1,0 +1,32 @@
+variables:
+  myString: Hello World
+  myNumber: 123
+  myArray:
+    - Entry 1
+    - Entry 2
+    - Entry 3
+  myObject:
+    key: value
+
+tasks:
+  run-sample:
+    description: Runs this demo
+    jobs:
+      - name: Print string
+        type: command
+        command: echo ${myString}
+      - name: Print number
+        type: command
+        command: echo ${myNumber}
+      - name: Print object value
+        type: command
+        command: echo '${JSON.stringify(myObject, null, 2)}'
+      - name: PrintArray
+        type: repeat
+        forEach: element
+        of: ${myArray}
+        index: index
+        jobs:
+          - name: Print element ${index+1}
+            type: command
+            command: echo ${element}

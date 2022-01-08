@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "SkwidVariables": {
+      "type": "object",
+      "description": "Key-Value pair of globally available variables.",
+      "additionalProperties": true
+    },
+    "SkwidTask": {
+      "additionalProperties": false,
+      "description": "Command definition",
+      "properties": {
+        "description": {
+          "description": "Description of this task, being shown to the user when the command help is printed.",
+          "type": "string"
+        },
+        "children": {
+          "description": "Key value based configuration of sub-tasks.",
+          "additionalProperties": {
+            "$ref": "#/definitions/SkwidTask"
+          },
+          "type": "object"
+        },
+        "jobs": {
+          "description": "Jobs to run when the command is run.",
+          "items": {
+            "$ref": "#/definitions/SkwidJob"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "SkwidJob": {
+      "properties": {
+        "type": {
+          "description": "Type of the job",
+          "type": [
+            "string"
+          ],
+          "oneOf": [
+            {
+              "const": "declare",
+              "description": "Declare variables for the following jobs and sub-jobs"
+            },
+            {
+              "const": "condition",
+              "description": "Define a condition about when to execute the sub-jobs"
+            },
+            {
+              "const": "command",
+              "description": "Execute a command as a child-process"
+            },
+            {
+              "const": "task",
+              "description": "Execute a task as sub-job"
+            },
+            {
+              "const": "repeat",
+              "description": "Repeat all sub-jobs for each element of an input array"
+            }
+          ]
+        },
+        "name": {
+          "description": "Human readable caption for a command. Will be logged and shown to the user.",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "declare" }
+            }
+          },
+          "then": {
+            "properties": {
+              "variables": {
+                "$ref": "#/definitions/SkwidVariables"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "condition" }
+            }
+          },
+          "then": {
+            "properties": {
+              "condition": {
+                "description": "The condition to check",
+                "type": [
+                  "boolean",
+                  "string"
+                ]
+              },
+              "jobs": {
+                "type": "array",
+                "description": "The jobs to execute if `condition` is true",
+                "items": {
+                  "$ref": "#/definitions/SkwidJob"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": { "const": "command" }
+            }
+          },
+          "then": {
+            "properties": {
+              "command": {
+                "description": "The command to execute"
+              },
+              "workingDirectory": {
+                "type": "string",
+                "description": "Sets a working directory for the command. Default is the last set working directory. If not set yet manually, it's the directory of this configuration file."
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "description": "A schema for the `/skwid.ya?ml/` file.",
+  "properties": {
+    "variables": {
+      "$ref": "#/definitions/SkwidVariables"
+    },
+    "tasks": {
+      "additionalProperties": {
+        "$ref": "#/definitions/SkwidTask"
+      },
+      "description": "Key value based configuration of tasks.",
+      "type": "object"
+    }
+  },
+  "type": "object"
+}

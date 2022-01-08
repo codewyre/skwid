@@ -5,24 +5,45 @@
   "main": "index.js",
   "private": "true",
   "license": "MIT",
+  "bin": {
+    "skwid": "./dist/index.js"
+  },
   "scripts": {
+    "create-schema": "cp src/skwid.schema.json dist/skwid.schema.json",
     "build": "tsc -p tsconfig.app.json",
+    "start": "yarn build && node ./dist/index.js",
     "lint": "tslint --project tsconfig.app.json",
     "test": "jasmine-ts --config=jasmine.config.js",
     "coverage": "nyc  -x \"*.spec.ts\" -x \"jasmine.config.js\" yarn test"
+  },
+  "dependencies": {
+    "@codewyre/skwid-contracts": "^1.0.0",
+    "@codewyre/wyrekit-inversify-modules": "^1.0.0",
+    "commander": "^8.3.0",
+    "inversify": "^6.0.1",
+    "ora": "^5.0.0",
+    "reflect-metadata": "^0.1.13",
+    "shell-parse": "^0.0.2",
+    "vm2": "^3.9.5",
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
     "@codewyre/jasmine-preset": "^1.0.0",
     "@codewyre/tslint-preset": "1.0.0",
     "@codewyre/typescript-preset": "1.0.0",
+    "@types/chalk": "^2.2.0",
     "@types/jasmine": "^3.9.1",
     "@types/node": "^16.10.2",
+    "@types/ora": "^3.2.0",
+    "@types/yaml": "^1.9.7",
+    "chalk": "^4.0.0",
     "jasmine": "^3.9.0",
+    "jasmine-spec-reporter": "7.0.0",
+    "jasmine-ts": "0.4.0",
+    "nyc": "15.1.0",
+    "ts-node": "10.2.1",
     "tslint": "6.1.3",
     "typescript": "^4.4.3",
-    "jasmine-spec-reporter": "7.0.0",
-    "ts-node": "10.2.1",
-    "jasmine-ts": "0.4.0",
-    "nyc": "15.1.0"
+    "typescript-json-schema": "^0.52.0"
   }
 }

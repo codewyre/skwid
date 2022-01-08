@@ -1,0 +1,46 @@
+# variables:
+#   workdir: ~/workdir/blub
+#   testArray:
+#     - value: 4
+#     - value: 5
+#     - value: 6
+
+# tasks:
+#   show:
+#     description: Show different stuff.
+#     children:
+#       info:
+#         description: Show the package info
+#         jobs:
+#           - name: Declaring global task variables
+#             type: declare
+#             variables:
+#               projectName: test
+#               version: "1.0.0"
+#           - name: Repeating print for 'testArray'
+#             type: repeat
+#             forEach: item
+#             of: '${testArray}'
+#             index: iteration
+#             jobs:
+#               - name: ${item.value} - Print vars for item
+#                 type: command
+#                 command: sleep 2 && echo ${iteration} - ${item.value} - ${projectName} - ${version} - ${workdir} - ${SHELL}
+
+#   build:
+#     description: Build this project
+#     jobs:
+#       - name: Setting environment variables
+#         type: declare
+#         variables:
+#           project: blub
+#           build: false
+
+#       - name: Build Project if blub is set
+#         type: condition
+#         condition: ${build}
+#         jobs:
+#           - name: Print env
+#             type: command
+#             command: printenv
+#             workingDirectory: ./test

@@ -1,8 +1,13 @@
 {
   "extends": "./node_modules/@codewyre/typescript-preset/cli-app/tsconfig.app.json",
   "compilerOptions": {
+    "target": "es2015",
+    "lib": ["ES2015"],
+    "module": "CommonJS",
     "rootDir": "./src",
-    "outDir": "./.build"
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationDir": "./dist/",
   },
   "files": [
     "src/index.ts"

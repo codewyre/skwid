@@ -1,0 +1,20 @@
+variables:
+  from: -20
+  to: 20
+  step: 2
+
+tasks:
+  run-sample:
+    jobs:
+      - name: Repeat until zero
+        type: repeat
+
+        from: ${from}
+        to: ${to}
+        step: ${step}
+        index: i
+
+        jobs:
+          - name: Print number
+            type: command
+            command: echo ${i}
