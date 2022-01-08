@@ -1,5 +1,14 @@
 # Skwid Configuration Reference
 
+- [Job Types](#job-types)
+  - [Declare](#declare)
+  - [Command](#command)
+  - [Condition Job](#condition-job)
+  - [Repeat Job](#repeat-job)
+    - [Repeat while](#repeat-while)
+    - [Repeat From ... To](#repeat-from--to)
+    - [Repeat for each item in a list](#repeat-for-each-item-in-a-list)
+
 ## Job Types
 
 ### Declare

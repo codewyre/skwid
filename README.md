@@ -1,6 +1,7 @@
 # skwid - Multi-Technology Development made easy!
 
-Makefiles, grunt, Shell Scripts, gulp, yarn, npm, maven...... Feeling like in a config hell? Want one central point to control everything? Missing documentation? Here comes Skwid!
+Makefiles, grunt, Shell Scripts, gulp, yarn, npm,
+maven...... Feeling like in a config hell? Want one central point to control everything? Missing documentation? Here comes Skwid!
 
 Skwid (`/skwɪd/`) is a tool wanting to be the command center of your project. It provides:
 
@@ -9,6 +10,17 @@ Skwid (`/skwɪd/`) is a tool wanting to be the command center of your project. I
   - Declarative and documentable definition language.
   - Logical Flow Control of your project processes
   - Pluggable job system - Missing something? Add it! \o/
+
+**Quick Access:**
+- [Obtain skwid](#obtain-skwid)
+  - [Using Yarn](#using-yarn)
+  - [Using npm](#using-npm)
+- [Using skwid](#using-skwid)
+- [Configuring skwid](#configuring-skwid)
+  - [Adding variables](#adding-variables)
+  - [Configuring tasks](#configuring-tasks)
+  - [Adding jobs to tasks](#adding-jobs-to-tasks)
+  - [Sample Config](#sample-config)
 
 
 ## Obtain skwid
@@ -103,7 +115,7 @@ tasks:
         command: echo 'Hello World!' # Command to execute
 ```
 
-### Sample Config:
+### Sample Config
 
 ```yaml
 variables:
