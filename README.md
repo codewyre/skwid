@@ -3,7 +3,7 @@
 Makefiles, grunt, Shell Scripts, gulp, yarn, npm,
 maven...... Feeling like in a config hell? Want one central point to control everything? Missing documentation? Here comes Skwid!
 
-Skwid (`/skwɪd/`) is a tool wanting to be the command center of your project. It provides:
+Skwid (`/skwɪd/`, like squid) is a tool wanting to be the command center of your project. It provides:
 
   - A modular project configuration, including tasks, variables and more.
   - A single definition language, independent from the technology used.
@@ -16,11 +16,16 @@ Skwid (`/skwɪd/`) is a tool wanting to be the command center of your project. I
   - [Using Yarn](#using-yarn)
   - [Using npm](#using-npm)
 - [Using skwid](#using-skwid)
-- [Configuring skwid](#configuring-skwid)
+- [Configuring skwid solutions](#configuring-skwid-solutions)
+  - [Using a self-configured list](#using-a-self-configured-list)
+  - [Using a 3rd-party managed project list](#using-a-3rd-party-managed-project-list)
+    - [Lerna](#lerna)
+- [Configuring skwid projects](#configuring-skwid-projects)
   - [Adding variables](#adding-variables)
   - [Configuring tasks](#configuring-tasks)
   - [Adding jobs to tasks](#adding-jobs-to-tasks)
   - [Sample Config](#sample-config)
+- [Contribution](#contribution)
 
 
 ## Obtain skwid
@@ -54,7 +59,43 @@ Options:
   -h, --help     display help for command
 ```
 
-## Configuring skwid
+## Configuring skwid solutions
+
+You can group projects into (software project) solutions. This will ease the maintenance and development of multiple projects.
+
+To activate `Solution Mode` for a skwid project folder, you need to set the `type` property to `solution`. By default, it is `project`.
+
+### Using a self-configured list
+
+This will configure a fixed list of projects, having skwid files in the given directories per project:
+
+```yaml
+type: solution
+
+solution:
+  name: My Software Project
+  sources:
+    - type: items
+      items:
+        - ./my-project-a
+        - ./my-project-b
+```
+
+### Using a 3rd-party managed project list
+
+#### Lerna
+
+
+```yaml
+type: solution
+
+solution:
+  name: My Software Project
+  sources:
+    - type: lerna
+```
+
+## Configuring skwid projects
 
 **⚠️⚠️⚠️ For a Detailed documentation refer to the [Skwid Documentation](./docs/README.md)**
 
@@ -155,3 +196,11 @@ tasks:
             type: command
             command: echo ${element}
 ```
+
+## Contribution
+
+1. Pull repository
+2. Ensure Node and Yarn is installed.
+3. Run `yarn` in repository.
+4. Run `yarn build` in repository.
+5. `node projects/skwid/dist/index.js`

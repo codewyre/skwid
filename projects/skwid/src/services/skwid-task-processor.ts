@@ -10,7 +10,8 @@ export class SkwidTaskProcessor {
 
   //#region Ctor
   public constructor(
-    @optional() @multiInject(InjectionTokens.SkwidJobHandler)
+    @optional()
+    @multiInject(InjectionTokens.SkwidJobHandler)
     private readonly _jobHandlers?: Array<SkwidJobHandler<SkwidJob>>) {
   }
   //#endregion

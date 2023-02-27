@@ -1,5 +1,5 @@
 {
-  "extends": "./node_modules/@codewyre/typescript-preset/cli-app/tsconfig.app.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "target": "es2015",
     "lib": ["ES2015"],

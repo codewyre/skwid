@@ -1,0 +1,19 @@
+{
+  "name": "@codewyre/skwid-contracts",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "_clean": "rm -rf dist",
+    "_compile": "tsc -p .",
+    "_parsePackageJson": "yarn __parsePackageJson1 && yarn __parsePackageJson2 && yarn __parsePackageJson3",
+    "__parsePackageJson1": "jq '.main=\"index.js\"' package.json > dist/package.json",
+    "__parsePackageJson2": "jq '.typings=\"index.d.ts\"' dist/package.json > dist/package1.json",
+    "__parsePackageJson3": "mv dist/package1.json dist/package.json",
+    "build": "yarn _clean && yarn _compile && yarn _parsePackageJson"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4"
+  }
+}
