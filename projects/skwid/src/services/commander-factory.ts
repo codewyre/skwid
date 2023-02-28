@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import { inject, injectable } from 'inversify';
 import { InjectionTokens } from '../configuration/injection-tokens.enum';
+import { SkwidSolutionJobHandler } from '../job-handlers/skwid-solution.job-handler';
 import { SkwidConfiguration } from '../models/configuration/skwid-configuration.model';
 import { SkwidTask } from '../models/configuration/skwid-task';
 import { SkwidTaskRegistry } from '../models/configuration/skwid-task-registry.model';
@@ -18,6 +19,7 @@ export class CommanderFactory {
     @inject(Command) private _program: Command,
     @inject(InjectionTokens.PackageInfo) private _package: { version: string },
     @inject(SkwidTaskProcessor) private _taskProcessor: SkwidTaskProcessor,
+    @inject(SkwidSolutionJobHandler) private _solutionJobHandler: SkwidSolutionJobHandler,
     @inject(InjectionTokens.ProcessInfo) private readonly _processInfo: NodeJS.Process) {
 
     this._program
@@ -28,6 +30,10 @@ export class CommanderFactory {
 
   //#region Public Methods
   public prepareCli(config: SkwidConfiguration, rootContext: Context): Command {
+    if (config.solution) {
+      this.prepareCliForSolution(config);
+    }
+
     if (!config?.tasks) {
       return this._program;
     }
@@ -35,6 +41,18 @@ export class CommanderFactory {
     this.createCommand(config.tasks, rootContext);
 
     return this._program;
+  }
+
+  public prepareCliForSolution(config: SkwidConfiguration): void {
+    const command = this._program
+      .command('run -- [args]')
+      .description('Runs the specified command per each project found in a dependency-aware order.');
+
+    command
+      .action(async (...args) => {
+        const { processedArgs: runArgs }  = args.at(-1);
+        this._solutionJobHandler.handleJob('run', ...runArgs);
+      });
   }
   //#endregion
 
