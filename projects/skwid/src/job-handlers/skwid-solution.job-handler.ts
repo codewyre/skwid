@@ -74,7 +74,9 @@ export class SkwidSolutionJobHandler {
         });
 
       breadcrumbsList.pop();
+      console.log('');
     }
+
   }
 
   private async printSolutionInfo(solution: SkwidSolutionInformation): Promise<void> {
