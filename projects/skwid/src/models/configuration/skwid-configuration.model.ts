@@ -1,3 +1,4 @@
+import { SkwidSolution } from './skwid-solution.model';
 import { SkwidTaskRegistry } from './skwid-task-registry.model';
 
 /**
@@ -13,4 +14,9 @@ export interface SkwidConfiguration {
    * Key value based configuration of commands.
    */
   tasks?: SkwidTaskRegistry;
+
+  /**
+   *
+   */
+  solution?: SkwidSolution;
 }

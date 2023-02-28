@@ -2,6 +2,40 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
   "definitions": {
+    "SkwidSolutionProjectSource": {
+      "type": "object",
+      "description": "Defines a skwid project collection",
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "description": "The type of the project information source",
+          "type": "string",
+          "enum": [
+            "lerna",
+            "fixed"
+          ],
+          "default": "fixed"
+        }
+      }
+    },
+    "SkwidSolution": {
+      "type": "object",
+      "description": "Defines a skwid project collection",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Display Name of the solution",
+          "type": "string"
+        },
+        "sources": {
+          "description": "Defines project information sources for a skwid solution.",
+          "items": {
+            "$ref": "#/definitions/SkwidSolutionProjectSource"
+          },
+          "type": "array"
+        }
+      }
+    },
     "SkwidVariables": {
       "type": "object",
       "description": "Key-Value pair of globally available variables.",
@@ -133,6 +167,19 @@
   "properties": {
     "variables": {
       "$ref": "#/definitions/SkwidVariables"
+    },
+    "type": {
+      "enum": [
+        "project",
+        "solution"
+      ],
+      "default": "project",
+      "description": "The type of this skwid project. Can be `solution` or `project`. Default is `project`",
+      "type": "string"
+    },
+    "solution": {
+      "$ref": "#/definitions/SkwidSolution",
+      "description": "Defines a skwid project collection"
     },
     "tasks": {
       "additionalProperties": {

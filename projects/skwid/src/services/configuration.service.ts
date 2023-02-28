@@ -21,8 +21,8 @@ export class ConfigurationService {
   //#endregion
 
   //#region Private Methods
-  public getConfiguration(): { config: SkwidConfiguration, path: string } {
-    const configFilePath = this.resolveConfigFilePath();
+  public getConfiguration(location?: string): { config: SkwidConfiguration, path: string } {
+    const configFilePath = location || this.resolveConfigFilePath();
     const configFile = this._fileSystem
       .readFileSync(configFilePath)
       .toString();
