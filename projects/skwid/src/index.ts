@@ -22,7 +22,7 @@ import { Application } from './app/application';
 import { SkwidSolutionJobHandler } from './job-handlers/skwid-solution.job-handler';
 import { SolutionManager } from './services/solution-manager';
 import { SkwidProjectSourceProvider } from './models/skwid-project-source.provider';
-import { FixedProjectProvider } from './services/fixed-project.provider';
+import { FixedProjectProvider } from './services/fixed.project-provider';
 
 function findPackageInfo(): any {
   let possiblePath = __dirname;
