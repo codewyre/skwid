@@ -45,7 +45,7 @@ export class CommanderFactory {
 
   public prepareCliForSolution(config: SkwidConfiguration): void {
     const command = this._program
-      .command('run <myArg> -- [args]')
+      .command('run -- [args]')
       .description('Runs the specified command per each project found in a dependency-aware order.');
 
     command
