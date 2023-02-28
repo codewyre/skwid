@@ -15,11 +15,6 @@ export class ConfigurationService {
     @inject(InjectionTokens.ProcessInfo) private readonly _processInfo: NodeJS.Process) { }
   //#endregion
 
-  //#region Public Methods
-  public readConfiguration() {
-  }
-  //#endregion
-
   //#region Private Methods
   public getConfiguration(location?: string): { config: SkwidConfiguration, path: string } {
     const configFilePath = location || this.resolveConfigFilePath();
@@ -30,8 +25,10 @@ export class ConfigurationService {
     const config: SkwidConfiguration = this._yamlService
       .parse(configFile);
 
-    this._processInfo
-      .chdir(this._pathService.dirname(configFilePath));
+    if (!location) {
+      this._processInfo
+        .chdir(this._pathService.dirname(configFilePath));
+    }
 
     return { config, path: configFilePath };
   }

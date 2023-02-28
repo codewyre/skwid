@@ -4,7 +4,6 @@ import { SkwidConfiguration } from '../models/configuration/skwid-configuration.
 import { SkwidSolutionProjectSource } from '../models/configuration/skwid-solution-project-source.model';
 import { SkwidProjectSourceProvider } from '../models/skwid-project-source.provider';
 import { SkwidProject } from '../models/skwid-project.model';
-import { ConfigurationService } from './configuration.service';
 
 export interface FixedProjectProviderConfig extends SkwidSolutionProjectSource{
   projects: string[];

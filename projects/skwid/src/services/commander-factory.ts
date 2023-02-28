@@ -51,7 +51,7 @@ export class CommanderFactory {
     command
       .action(async (...args) => {
         const { processedArgs: runArgs }  = args.at(-1);
-        this._solutionJobHandler.handleJob('run', runArgs);
+        this._solutionJobHandler.handleJob('run', ...runArgs);
       });
   }
   //#endregion
