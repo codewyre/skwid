@@ -23,6 +23,7 @@ import { SkwidSolutionJobHandler } from './job-handlers/skwid-solution.job-handl
 import { SolutionManager } from './services/solution-manager';
 import { SkwidProjectSourceProvider } from './models/skwid-project-source.provider';
 import { FixedProjectProvider } from './services/fixed.project-provider';
+import { LernaProjectProvider } from './services/lerna.project-provider';
 
 function findPackageInfo(): any {
   let possiblePath = __dirname;
@@ -48,6 +49,7 @@ const providers: Array<any> = [
   SkwidTaskProcessor,
   { provide: Command, useValue: new Command() },
   { provide: SkwidProjectSourceProvider, useClass: FixedProjectProvider },
+  { provide: SkwidProjectSourceProvider, useClass: LernaProjectProvider },
   { provide: GlobalInjectionTokens.SkwidJobHandler, useClass: SkwidCommandJobHandler },
   { provide: GlobalInjectionTokens.SkwidJobHandler, useClass: SkwidDeclareJobHandler },
   { provide: GlobalInjectionTokens.SkwidJobHandler, useClass: SkwidConditionJobHandler },

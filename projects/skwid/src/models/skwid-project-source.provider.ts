@@ -12,9 +12,12 @@ export abstract class SkwidProjectSourceProvider {
   abstract readonly type: string;
   abstract getProjects(configLocation: string, config: SkwidConfiguration): Promise<SkwidProject[]>;
 
+
+  //#region Ctor
   public constructor(
-    @inject(InjectionTokens.PathService) private readonly _pathService: PathService,
-    @inject(ConfigurationService) private readonly _configurationService: ConfigurationService) { }
+    @inject(InjectionTokens.PathService) protected readonly _pathService: PathService,
+    @inject(ConfigurationService) protected readonly _configurationService: ConfigurationService) { }
+  //#endregion
 
   protected parseProject(configPath: string, projectPath: string): SkwidProject {
     const location = this._pathService.resolve(path.dirname(configPath), projectPath);
