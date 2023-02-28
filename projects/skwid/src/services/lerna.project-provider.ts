@@ -35,14 +35,20 @@ export class LernaProjectProvider extends SkwidProjectSourceProvider {
     const lernaBinary = this.getLernaBinaryPath();
     const packageInfos = this.loadProjectInfos(lernaBinary);
 
-    return Promise.all(packageInfos.map(({ location }) => this.parseProject(
-      configLocation,
-      location
-    )));
+    return Promise.all(packageInfos.map(({ location }) =>
+      this.parseProject(
+        configLocation,
+        location
+      )));
   }
 
   private loadProjectInfos(lernaBinary: string): LernaPackageInfo[] {
-    const lernaDeps = execSync(`${lernaBinary} ls --json`, { stdio: [] }).toString();
+    const lernaDeps = execSync(
+      `${lernaBinary} ls --json`, {
+        stdio: []
+      })
+      .toString();
+
     return JSON.parse(lernaDeps);
   }
 
