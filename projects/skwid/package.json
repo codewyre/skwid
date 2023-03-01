@@ -23,6 +23,7 @@
     "ora": "^5.0.0",
     "reflect-metadata": "^0.1.13",
     "shell-parse": "^0.0.2",
+    "toposort": "^2.0.2",
     "vm2": "^3.9.5",
     "yaml": "^1.10.2"
   },
