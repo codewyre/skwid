@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "A CLI that enables you to easily set up tasks and operations",
   "main": "index.js",
-  "private": "true",
   "license": "MIT",
   "bin": {
     "skwid": "./dist/index.js"
