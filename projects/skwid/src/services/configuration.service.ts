@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+
 import { InjectionTokens } from '../configuration/injection-tokens.enum';
 import { SkwidConfiguration } from '../models/configuration/skwid-configuration.model';
 import { FileSystemService } from '../models/node/file-system.service';
@@ -35,7 +36,7 @@ export class ConfigurationService {
 
   private resolveConfigFilePath(): string {
     let possiblePath = process.cwd();
-    while (possiblePath) {
+    while (possiblePath && possiblePath !== '/') {
       let configPath = this._pathService.join(possiblePath, 'skwid.yaml');
       if (this._fileSystem.existsSync(configPath)) {
         return configPath;
