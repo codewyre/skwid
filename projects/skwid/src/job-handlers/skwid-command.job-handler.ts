@@ -1,8 +1,9 @@
 import { SkwidJobHandler, SkwidJobHandlerUtils, SkwidJobResult } from '@codewyre/skwid-contracts';
-import { SkwidCommandJob } from '../models/configuration/job-types/skwid-command-job';
-import { injectable } from 'inversify';
-import { Context } from '../models/context';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import { injectable } from 'inversify';
+
+import { SkwidCommandJob } from '../models/configuration/job-types/skwid-command-job';
+import { Context } from '../models/context';
 
 @injectable()
 export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> {
@@ -39,7 +40,7 @@ export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> 
       .interpolate(configuration.shell || 'sh', context);
 
     const workingDirectory = configuration.workingDirectory
-      ? this.utils.interpolate<string>(configuration.command, context)
+      ? this.utils.interpolate<string>(configuration.workingDirectory, context)
       : this.utils.interpolate<string>('${skwid$.configurationDirectory}', context);
 
     let outputs: { [name: string]: string } = {
