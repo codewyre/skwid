@@ -5,6 +5,7 @@
   "repository": "git@github.com:codewyre/skwid",
   "author": "Marco Klein <marco.klein@trustedshops.de>",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "postinstall": "lerna bootstrap --force-local",
     "build": "lerna exec yarn build",

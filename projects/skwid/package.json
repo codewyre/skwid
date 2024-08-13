@@ -8,6 +8,9 @@
   "bin": {
     "skwid": "./dist/index.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "create-schema": "cp src/skwid.schema.json dist/skwid.schema.json",
     "build": "tsc -p tsconfig.app.json && yarn create-schema && yarn _parsePackageJson",
