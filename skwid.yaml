@@ -25,7 +25,7 @@ tasks:
             jobs:
               - name: ${item.value} - Print vars for item
                 type: command
-                command: sleep 2 && echo ${iteration} - ${item.value} - ${projectName} - ${version} - ${workdir} - ${SHELL}
+                command: echo ${iteration} - ${item.value} - ${projectName} - ${version} - ${workdir} - ${SHELL}
 
   build:
     description: Build this project
