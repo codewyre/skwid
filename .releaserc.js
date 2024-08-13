@@ -18,7 +18,10 @@ export default {
 		'@semantic-release/release-notes-generator',
 		'@semantic-release/github',
     ['@semantic-release/npm', {
-      "pkgRoot": "./dist"
+      "pkgRoot": "./projects/skwid-contracts/dist"
+    }],
+    ['@semantic-release/npm', {
+      "pkgRoot": "./projects/skwid/dist"
     }],
     '@semantic-release/git',
 	],

@@ -17,7 +17,7 @@
     "coverage": "nyc  -x \"*.spec.ts\" -x \"jasmine.config.js\" yarn test",
     "_parsePackageJson": "yarn __parsePackageJson1 && yarn __parsePackageJson2 && yarn __parsePackageJson3",
     "__parsePackageJson1": "jq '.main=\"index.js\"' package.json > dist/package.json",
-    "__parsePackageJson2": "jq '.bin.skwid=\"index.js\"' package.json > dist/package.json",
+    "__parsePackageJson2": "jq '.bin.skwid=\"index.js\"' dist/package.json > dist/package1.json",
     "__parsePackageJson3": "mv dist/package1.json dist/package.json"
   },
   "dependencies": {
