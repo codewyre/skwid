@@ -10,7 +10,7 @@
   },
   "scripts": {
     "create-schema": "cp src/skwid.schema.json dist/skwid.schema.json",
-    "build": "yarn create-schema && tsc -p tsconfig.app.json",
+    "build": "tsc -p tsconfig.app.json && yarn create-schema",
     "start": "yarn build && node ./dist/index.js",
     "lint": "tslint --project tsconfig.app.json",
     "test": "jasmine-ts --config=jasmine.config.js",
