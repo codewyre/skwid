@@ -46,7 +46,7 @@ export class YarnWorkspaceProjectProvider extends SkwidProjectSourceProvider {
 
   private loadProjectInfos(yarnBinary: string): LernaPackageInfo[] {
     const lernaDeps = execSync(
-      `${yarnBinary} workspaces info`, {
+      `${yarnBinary} -s workspaces info`, {
         stdio: []
       })
       .toString();
