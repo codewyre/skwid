@@ -20,6 +20,7 @@ Skwid (`/skwɪd/`, like squid) is a tool wanting to be the command center of you
   - [Using a self-configured list](#using-a-self-configured-list)
   - [Using a 3rd-party managed project list](#using-a-3rd-party-managed-project-list)
     - [Lerna](#lerna)
+    - [Yarn Workspaces](#yarn-workspaces)
 - [Configuring skwid projects](#configuring-skwid-projects)
   - [Adding variables](#adding-variables)
   - [Configuring tasks](#configuring-tasks)
@@ -93,6 +94,18 @@ solution:
   name: My Software Project
   sources:
     - type: lerna
+```
+
+#### Yarn Workspaces
+
+
+```yaml
+type: solution
+
+solution:
+  name: My Software Project
+  sources:
+    - type: yarn-workspace
 ```
 
 ## Configuring skwid projects

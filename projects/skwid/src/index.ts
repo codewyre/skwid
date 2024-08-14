@@ -1,29 +1,30 @@
 #!/usr/bin/env node
 /// <reference path="./globals.d.ts" />
 import 'reflect-metadata';
-import * as path from 'path';
+
+import { InjectionTokens as GlobalInjectionTokens } from '@codewyre/skwid-contracts';
+import { Command } from 'commander';
 import * as fs from 'fs';
+import { Container } from 'inversify';
+import * as path from 'path';
 import * as yaml from 'yaml';
 
-import { Container } from 'inversify';
-import { Command } from 'commander';
-import { InjectionTokens as GlobalInjectionTokens } from '@codewyre/skwid-contracts';
-
-import { SkwidTaskProcessor } from './services/skwid-task-processor';
+import { Application } from './app/application';
+import { InjectionTokens } from './configuration/injection-tokens.enum';
+import { SkwidCommandJobHandler } from './job-handlers/skwid-command.job-handler';
+import { SkwidConditionJobHandler } from './job-handlers/skwid-condition.job-handler';
+import { SkwidDeclareJobHandler } from './job-handlers/skwid-declare.job-handler';
+import { SkwidRepeatJobHandler } from './job-handlers/skwid-repeat.job-handler';
+import { SkwidSolutionJobHandler } from './job-handlers/skwid-solution.job-handler';
+import { SkwidProjectSourceProvider } from './models/skwid-project-source.provider';
 import { CommanderFactory } from './services/commander-factory';
 import { ConfigurationService } from './services/configuration.service';
 import { ContextManagerService } from './services/context-manager.service';
-import { SkwidCommandJobHandler } from './job-handlers/skwid-command.job-handler';
-import { SkwidDeclareJobHandler } from './job-handlers/skwid-declare.job-handler';
-import { SkwidConditionJobHandler } from './job-handlers/skwid-condition.job-handler';
-import { SkwidRepeatJobHandler } from './job-handlers/skwid-repeat.job-handler';
-import { InjectionTokens } from './configuration/injection-tokens.enum';
-import { Application } from './app/application';
-import { SkwidSolutionJobHandler } from './job-handlers/skwid-solution.job-handler';
-import { SolutionManager } from './services/solution-manager';
-import { SkwidProjectSourceProvider } from './models/skwid-project-source.provider';
 import { FixedProjectProvider } from './services/fixed.project-provider';
 import { LernaProjectProvider } from './services/lerna.project-provider';
+import { SkwidTaskProcessor } from './services/skwid-task-processor';
+import { SolutionManager } from './services/solution-manager';
+import { YarnWorkspaceProjectProvider } from './services/yarn-workspace.project-provider';
 
 function findPackageInfo(): any {
   let possiblePath = __dirname;
@@ -50,6 +51,7 @@ const providers: Array<any> = [
   { provide: Command, useValue: new Command() },
   { provide: SkwidProjectSourceProvider, useClass: FixedProjectProvider },
   { provide: SkwidProjectSourceProvider, useClass: LernaProjectProvider },
+  { provide: SkwidProjectSourceProvider, useClass: YarnWorkspaceProjectProvider },
   { provide: GlobalInjectionTokens.SkwidJobHandler, useClass: SkwidCommandJobHandler },
   { provide: GlobalInjectionTokens.SkwidJobHandler, useClass: SkwidDeclareJobHandler },
   { provide: GlobalInjectionTokens.SkwidJobHandler, useClass: SkwidConditionJobHandler },
