@@ -1,13 +1,14 @@
 import chalk from 'chalk';
 import { spawnSync } from 'child_process';
 import { inject, injectable } from 'inversify';
+
 import { InjectionTokens } from '../configuration/injection-tokens.enum';
 import { PathService } from '../models/node/path.service';
 import { SkwidSolutionInformation } from '../models/skwid-solution-information';
 import { ConfigurationService } from '../services/configuration.service';
 import { SolutionManager } from '../services/solution-manager';
 
-type SolutionCommand = 'run'|'info';
+type SolutionCommand = 'run'|'info'|'execute';
 
 type SolutionCommandHandlers = {
   [command in SolutionCommand]: () => Promise<void>;
@@ -29,11 +30,11 @@ export class SkwidSolutionJobHandler {
 
   //#region Public Methods
   public async handleJob(command: SolutionCommand, ...args: any[]): Promise<void> {
-
     const solution = await this._solutionManager.getSolution();
 
     const handlers: SolutionCommandHandlers = {
-      run: () => this.runCommand(solution, args),
+      execute: () => this.runCommand(solution, args),
+      run: () => this.runCommand(solution, ['skwid', ...args]),
       info: () => this.printSolutionInfo(solution)
     };
 

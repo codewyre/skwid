@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { inject, injectable } from 'inversify';
+
 import { InjectionTokens } from '../configuration/injection-tokens.enum';
 import { SkwidSolutionJobHandler } from '../job-handlers/skwid-solution.job-handler';
 import { SkwidConfiguration } from '../models/configuration/skwid-configuration.model';
@@ -44,14 +45,32 @@ export class CommanderFactory {
   }
 
   public prepareCliForSolution(config: SkwidConfiguration): void {
-    const command = this._program
-      .command('run -- [args]')
-      .description('Runs the specified command per each project found in a dependency-aware order.');
+    const solution = this._program
+      .command('solution');
 
-    command
+    solution
+      .command('execute -- [args]')
+      .description('execute the specified command per each project found in a dependency-aware order.')
+      .action(async (...args) => {
+        const { processedArgs: runArgs }  = args.at(-1);
+        this._solutionJobHandler.handleJob('execute', ...runArgs);
+      });
+
+    solution
+      .command('run')
+      .argument('<task>')
+      .description('execute the specified task per each project found in a dependency-aware order.')
       .action(async (...args) => {
         const { processedArgs: runArgs }  = args.at(-1);
         this._solutionJobHandler.handleJob('run', ...runArgs);
+      });
+
+    solution
+      .command('info')
+      .description('show information about the currently configured solution and its projects')
+      .action(async (...args) => {
+        const { processedArgs: runArgs }  = args.at(-1);
+        this._solutionJobHandler.handleJob('info', ...runArgs);
       });
   }
   //#endregion

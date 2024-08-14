@@ -12,7 +12,8 @@
           "type": "string",
           "enum": [
             "lerna",
-            "fixed"
+            "fixed",
+            "yarn-workspace"
           ],
           "default": "fixed"
         }
