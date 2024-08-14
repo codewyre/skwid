@@ -66,6 +66,19 @@ You can group projects into (software project) solutions. This will ease the mai
 
 To activate `Solution Mode` for a skwid project folder, you need to set the `type` property to `solution`. By default, it is `project`.
 
+After configuration, you can use the following commands:
+
+```sh
+# Run command for every project in the solution
+skwid solution execute "echo 'Hello World'"
+
+# Run skwid task for every project in the solution
+skwid solution run task
+
+# Show information about the loaded solution
+skwid solution info
+```
+
 ### Using a self-configured list
 
 This will configure a fixed list of projects, having skwid files in the given directories per project:
