@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import path from 'path';
 
 import { getModuleDir } from './util/get-module-dir';

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /// <reference path="./globals.d.ts" />
 import 'reflect-metadata';
 
