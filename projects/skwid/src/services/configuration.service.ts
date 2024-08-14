@@ -1,4 +1,6 @@
 import { inject, injectable } from 'inversify';
+import mergeDeep from 'merge-deep';
+import path from 'path';
 
 import { InjectionTokens } from '../configuration/injection-tokens.enum';
 import { SkwidConfiguration } from '../models/configuration/skwid-configuration.model';
@@ -23,8 +25,17 @@ export class ConfigurationService {
       .readFileSync(configFilePath)
       .toString();
 
-    const config: SkwidConfiguration = this._yamlService
+    let config: SkwidConfiguration = this._yamlService
       .parse(configFile);
+    if (Array.isArray(config.extends)) {
+      for (const filePath of config.extends) {
+        const resolvedPath = this._pathService.join(
+          this._pathService.dirname(configFilePath),
+          filePath);
+        const { config: extendingConfig } = this.getConfiguration(resolvedPath);
+        config = mergeDeep(config, extendingConfig);
+      }
+    }
 
     if (!location) {
       this._processInfo

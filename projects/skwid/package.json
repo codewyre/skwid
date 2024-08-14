@@ -26,6 +26,7 @@
     "@codewyre/skwid-contracts": "^1.0.0",
     "commander": "^8.3.0",
     "inversify": "^6.0.1",
+    "merge-deep": "^3.0.3",
     "ora": "^5.0.0",
     "reflect-metadata": "^0.1.13",
     "shell-parse": "^0.0.2",

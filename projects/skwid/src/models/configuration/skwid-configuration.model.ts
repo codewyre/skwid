@@ -24,4 +24,10 @@ export interface SkwidConfiguration {
    *
    */
   solution?: SkwidSolution;
+
+  /**
+   * Array of file names that provide base
+   * configurations to include from elsewhere
+   */
+  extends: string[]
 }

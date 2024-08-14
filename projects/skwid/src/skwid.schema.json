@@ -182,6 +182,13 @@
       "$ref": "#/definitions/SkwidSolution",
       "description": "Defines a skwid project collection"
     },
+    "extends": {
+      "description": "Array of file names that provide base configurations to include from elsewhere",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "tasks": {
       "additionalProperties": {
         "$ref": "#/definitions/SkwidTask"
