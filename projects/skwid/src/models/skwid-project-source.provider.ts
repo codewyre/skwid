@@ -1,10 +1,11 @@
-import * as path from 'path';
 import { inject, injectable } from 'inversify';
-import { SkwidConfiguration } from './configuration/skwid-configuration.model';
-import { SkwidProject } from './skwid-project.model';
-import { ConfigurationService } from '../services/configuration.service';
-import { PathService } from './node/path.service';
+import * as path from 'path';
+
 import { InjectionTokens } from '../configuration/injection-tokens.enum';
+import { ConfigurationService } from '../services/configuration.service';
+import { SkwidConfiguration } from './configuration/skwid-configuration.model';
+import { PathService } from './node/path.service';
+import { SkwidProject } from './skwid-project.model';
 
 
 @injectable()
@@ -28,8 +29,8 @@ export abstract class SkwidProjectSourceProvider {
         location,
         config
       };
-    } catch {
-      throw new Error(`Error reading configuration for project at ${projectPath}.`);
+    } catch (err) {
+      throw new Error(`Error reading configuration for project at ${projectPath}: ` + (err as Error).message);
     }
   }
 }
