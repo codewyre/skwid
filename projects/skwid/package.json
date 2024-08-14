@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "bin": {
-    "skwid": "./dist/index.js"
+    "skwid": "./dist/cli.js"
   },
   "publishConfig": {
     "access": "public"

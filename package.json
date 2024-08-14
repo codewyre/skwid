@@ -9,6 +9,7 @@
   "scripts": {
     "postinstall": "lerna bootstrap --force-local",
     "build": "lerna exec yarn build",
+    "start": "node projects/skwid/dist/cli.js",
     "semantic-release": "semantic-release"
   },
   "devDependencies": {

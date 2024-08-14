@@ -10,7 +10,8 @@
     "declarationDir": "./dist/",
   },
   "files": [
-    "src/index.ts"
+    "src/index.ts",
+    "src/cli.ts"
   ],
   "exclude": [
     "**/*.spec.ts"
