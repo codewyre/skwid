@@ -1,5 +1,6 @@
 import { execSync } from 'child_process';
 import { inject, injectable } from 'inversify';
+import { array as toposort } from 'toposort';
 
 import { InjectionTokens } from '../configuration/injection-tokens.enum';
 import { ProjectSourceType } from '../models/configuration/project-source-type.enum';
@@ -10,11 +11,13 @@ import { SkwidProjectSourceProvider } from '../models/skwid-project-source.provi
 import { SkwidProject } from '../models/skwid-project.model';
 import { ConfigurationService } from './configuration.service';
 
-interface LernaPackageInfo {
+interface YarnWorkspace {
+  workspaceDependencies: string[];
   location: string;
-  name: string;
-  version: string;
-  private: boolean;
+  mismatchedWorkspaceDependencies: string[];
+}
+interface YarnWorkspaceInfo {
+  [packageName: string]: YarnWorkspace;
 }
 
 @injectable()
@@ -34,23 +37,56 @@ export class YarnWorkspaceProjectProvider extends SkwidProjectSourceProvider {
 
   public async getProjects(configLocation: string, config: SkwidConfiguration): Promise<SkwidProject[]> {
     const yarnBinary = 'yarn';
-    const packageInfos = this.loadProjectInfos(yarnBinary);
+    const workspaceInfo = this.loadProjectInfos(yarnBinary);
+    const sortedWorkspaces = this.getWorkspacesInTopologicalOrder(workspaceInfo);
 
     return Promise.all(
-      Object.values(packageInfos).map(({ location }) =>
+      sortedWorkspaces.map(({ location }) =>
         this.parseProject(
           configLocation,
           location
         )));
   }
 
-  private loadProjectInfos(yarnBinary: string): LernaPackageInfo[] {
-    const lernaDeps = execSync(
+  private getWorkspacesInTopologicalOrder(workspaceInfo: YarnWorkspaceInfo) {
+    const topologicalInput: {
+      nodes: Array<string>
+      edges: Array<[string, string]>
+    } = { nodes: [], edges: [] };
+
+    for (const [packageName, { workspaceDependencies }] of Object.entries(workspaceInfo)) {
+      topologicalInput.nodes.push(packageName);
+      if (workspaceDependencies?.length) {
+        topologicalInput.edges.push(
+          ...workspaceDependencies.map(dependency => [
+            packageName,
+            dependency
+          ] as [string, string]));
+      }
+    }
+
+    let sortedPackages: string[];
+    try {
+      sortedPackages = toposort(
+        topologicalInput.nodes,
+        topologicalInput.edges);
+      sortedPackages.reverse();
+    } catch (err) {
+      console.error((err as Error).message);
+      process.exit(1);
+    }
+
+    return sortedPackages
+      .map(workspaceName => workspaceInfo[workspaceName]);
+  }
+
+  private loadProjectInfos(yarnBinary: string): YarnWorkspaceInfo {
+    const workspaces = execSync(
       `${yarnBinary} -s workspaces info`, {
         stdio: []
       })
       .toString();
 
-    return JSON.parse(lernaDeps);
+    return JSON.parse(workspaces);
   }
 }
