@@ -1,9 +1,10 @@
+import { InjectionTokens, SkwidJob, SkwidJobHandler, SkwidJobHandlerUtils } from '@codewyre/skwid-contracts';
+import chalk from 'chalk';
 import { injectable, multiInject, optional } from 'inversify';
+import { NodeVM } from 'vm2';
+
 import { SkwidTask } from '../models/configuration/skwid-task';
 import { Context } from '../models/context';
-import { SkwidJob, SkwidJobHandler, InjectionTokens, SkwidJobHandlerUtils } from '@codewyre/skwid-contracts';
-import { NodeVM } from 'vm2';
-import chalk from 'chalk';
 
 @injectable()
 export class SkwidTaskProcessor {
@@ -170,8 +171,7 @@ export class SkwidTaskProcessor {
         return this.processJobs(jobs, context);
       },
       setSkwidExitCode: (exitCode: number) =>
-        console.log('Set exit code to ' + exitCode,
-        'TODO: Refactor to hand out this code to the skwid user')
+        process.exit(exitCode)
     };
     return utils;
   }
