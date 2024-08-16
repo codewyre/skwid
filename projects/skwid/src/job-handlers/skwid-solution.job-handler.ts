@@ -1,8 +1,10 @@
+import { SkwidJobHandlerUtils } from '@codewyre/skwid-contracts';
 import chalk from 'chalk';
-import { spawnSync } from 'child_process';
+import { spawn } from 'child_process';
 import { inject, injectable } from 'inversify';
 
 import { InjectionTokens } from '../configuration/injection-tokens.enum';
+import { CommandFailedError } from '../errors/command-failed.error';
 import { PathService } from '../models/node/path.service';
 import { SkwidSolutionInformation } from '../models/skwid-solution-information';
 import { ConfigurationService } from '../services/configuration.service';
@@ -14,8 +16,23 @@ type SolutionCommandHandlers = {
   [command in SolutionCommand]: () => Promise<void>;
 }
 
+interface CommandResult {
+  status: number,
+  value: string;
+  [outputChannel: string]: any;
+}
 @injectable()
 export class SkwidSolutionJobHandler {
+  //#region Properties
+  private _utils: SkwidJobHandlerUtils|null = null;
+  public get utils(): SkwidJobHandlerUtils {
+    return this._utils!;
+  }
+  public set utils(v: SkwidJobHandlerUtils) {
+    this._utils = v;
+  }
+  //#endregion
+
   //#region Ctor
   public constructor(
     @inject(InjectionTokens.PathService)
@@ -29,12 +46,12 @@ export class SkwidSolutionJobHandler {
   //#endregion
 
   //#region Public Methods
-  public async handleJob(command: SolutionCommand, ...args: any[]): Promise<void> {
+  public async handleJob(command: SolutionCommand, silent: boolean, ...args: any[]): Promise<void> {
     const solution = await this._solutionManager.getSolution();
 
     const handlers: SolutionCommandHandlers = {
-      execute: () => this.runCommand(solution, args),
-      run: () => this.runCommand(solution, ['skwid', ...args]),
+      execute: () => this.runCommand(solution, args, silent),
+      run: () => this.runCommand(solution, ['skwid', ...args], silent),
       info: () => this.printSolutionInfo(solution)
     };
 
@@ -43,7 +60,7 @@ export class SkwidSolutionJobHandler {
   //#endregion
 
   //#region Private Methods
-  private async runCommand(solution: SkwidSolutionInformation, args: any[]): Promise<void> {
+  private async runCommand(solution: SkwidSolutionInformation, args: any[], silent: boolean): Promise<void> {
     console.log('');
 
     const breadcrumbsList = [solution.config.solution?.name || 'Solution'];
@@ -67,17 +84,75 @@ export class SkwidSolutionJobHandler {
 
       printBreadcrumbs();
       console.log(chalk.cyan(`${chalk.underline(chalk.bold('sh $'))} ${args.join(' ')}\n`));
-      spawnSync(
-        'sh',
-        ['-c', args.join(' ')], {
-          stdio: [0, 1, 2],
-          cwd: project.location
+      try {
+        const result = await this.executeCommand(
+          silent,
+          'sh', ['-c', args.join(' ')],
+          project.location);
+        breadcrumbsList.pop();
+        console.log('');
+      } catch (error) {
+        if (Object.getPrototypeOf(error).constructor !== CommandFailedError) {
+          throw error;
+        }
+        const commandFailedError = error as CommandFailedError;
+        console.error(commandFailedError.message);
+        process.exit(commandFailedError.exitCode);
+      }
+    }
+  }
+
+  private async executeCommand(
+    silent: boolean,
+    command: string,
+    args: string[] = [],
+    cwd: string = process.cwd()) {
+
+    return await new Promise<CommandResult>((resolve, reject) => {
+      let outputs: { [name: string]: string } = {
+        stdout: '',
+        stderr: ''
+      };
+
+      const childProcess = spawn(
+        command,
+        args, {
+          cwd,
+          stdio: undefined
         });
 
-      breadcrumbsList.pop();
-      console.log('');
-    }
+      const inputStreams = (childProcess as any as { [name: string]: NodeJS.ReadStream })
 
+      for (const outputStream in outputs) {
+        inputStreams[outputStream].setEncoding('utf8');
+        inputStreams[outputStream].on('data', (data: Buffer) => {
+          outputs[outputStream] += data.toString();
+          if (silent) {
+            return;
+          }
+
+          (process as any)[outputStream as 'stdout'|'stderr'].write(data);
+        });
+      }
+
+      childProcess.on('close', (code) => {
+        if (code !== 0) {
+          const error = new CommandFailedError(
+            `The command "${command}" resulted in an error:\n${outputs.stderr}`,
+            code!,
+            outputs);
+
+          reject(error);
+          return;
+        }
+
+        resolve({
+          status: code,
+          ...outputs,
+          value: outputs.stdout.replace(/\n$/, '')
+        });
+      });
+    });
   }
 
   private async printSolutionInfo(solution: SkwidSolutionInformation): Promise<void> {

@@ -51,18 +51,23 @@ export class CommanderFactory {
     solution
       .command('execute -- [args]')
       .description('execute the specified command per each project found in a dependency-aware order.')
+      .option('-s, --silent', 'Run silently', false)
       .action(async (...args) => {
+        const { silent } = args.at(-2);
         const { processedArgs: runArgs }  = args.at(-1);
-        this._solutionJobHandler.handleJob('execute', ...runArgs);
+        this._solutionJobHandler.handleJob('execute', silent, ...runArgs);
       });
 
     solution
       .command('run')
       .argument('<task>')
+      .option('-s, --silent', 'Run silently', false)
       .description('execute the specified task per each project found in a dependency-aware order.')
       .action(async (...args) => {
-        const { processedArgs: runArgs }  = args.at(-1);
-        this._solutionJobHandler.handleJob('run', ...runArgs);
+
+        const { processedArgs: runArgs }: Command = args.at(-1);
+        const { silent } = args.at(-2);
+        this._solutionJobHandler.handleJob('run', silent, ...runArgs);
       });
 
     solution
@@ -70,7 +75,7 @@ export class CommanderFactory {
       .description('show information about the currently configured solution and its projects')
       .action(async (...args) => {
         const { processedArgs: runArgs }  = args.at(-1);
-        this._solutionJobHandler.handleJob('info', ...runArgs);
+        this._solutionJobHandler.handleJob('info', false, ...runArgs);
       });
   }
   //#endregion
