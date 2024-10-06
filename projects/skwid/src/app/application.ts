@@ -1,12 +1,13 @@
 import chalk from 'chalk';
+import { inject, injectable } from 'inversify';
+
+import { InjectionTokens } from '../configuration/injection-tokens.enum';
 import { SkwidConfiguration } from '../models/configuration/skwid-configuration.model';
 import { Context } from '../models/context';
-import { ContextManagerService } from '../services/context-manager.service';
-import { inject, injectable } from 'inversify';
-import { ConfigurationService } from '../services/configuration.service';
-import { CommanderFactory } from '../services/commander-factory';
-import { InjectionTokens } from '../configuration/injection-tokens.enum';
 import { PathService } from '../models/node/path.service';
+import { CommanderFactory } from '../services/commander-factory';
+import { ConfigurationService } from '../services/configuration.service';
+import { ContextManagerService } from '../services/context-manager.service';
 
 @injectable()
 export class Application {
@@ -36,7 +37,7 @@ export class Application {
       if (args.length === 2) {
         console.log(program.helpInformation());
       }
-    } catch(error) {
+    } catch (error) {
       console.log(chalk.red(`An error occurred: ${(error as Error).toString()}`));
       if (this._processInfo.argv.includes('--debug')) {
         let currentError = (error as any).innerError;
@@ -58,6 +59,7 @@ export class Application {
       .createChild({
         variables: Object.assign({}, process.env, {
           skwid$: {
+            configuration: config,
             configurationDirectory: this._pathService.dirname(path),
             configurationFile: path
           }

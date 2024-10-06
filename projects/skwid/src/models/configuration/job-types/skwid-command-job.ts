@@ -13,7 +13,7 @@ export interface SkwidCommandJob extends SkwidJob {
   workingDirectory?: string;
 
   /**
-   * Shell to run the command in. Defaults to `/bin/sh`.
+   * Shell to run the command in. Defaults to ['/bin/sh', '-c', '${command}Ä].
    */
-  shell: string;
+  shell: string[];
 }

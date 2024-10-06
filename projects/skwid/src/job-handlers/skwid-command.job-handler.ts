@@ -1,6 +1,7 @@
 import { SkwidJobHandler, SkwidJobHandlerUtils, SkwidJobResult } from '@codewyre/skwid-contracts';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { injectable } from 'inversify';
+import os from 'os';
 
 import { SkwidCommandJob } from '../models/configuration/job-types/skwid-command-job';
 import { Context } from '../models/context';
@@ -12,7 +13,7 @@ export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> 
   //#endregion
 
   //#region Properties
-  private _utils: SkwidJobHandlerUtils|null = null;
+  private _utils: SkwidJobHandlerUtils | null = null;
   public get utils(): SkwidJobHandlerUtils {
     return this._utils!;
   }
@@ -35,9 +36,23 @@ export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> 
     const silent: boolean = configuration.silent
       ? this.utils.interpolate(configuration.silent as string, context)
       : false;
+
+    const globalShell = this.utils.interpolate('${skwid$.configuration.shell}', context);
     const command = this.utils.interpolate(configuration.command, context);
-    const shell: string = this.utils
-      .interpolate(configuration.shell || 'sh', context);
+    let shellType = configuration.shell ?? globalShell;
+    if (!shellType) {
+      shellType = os.type() === "Windows_NT"
+        ? ['${command}']
+        : ['sh', '-c', '${command}'];
+    }
+
+    const shell: string[] = shellType.map(x =>
+      this.utils
+        .interpolate(x, context.createChild({
+          variables: {
+            command
+          }
+        })));
 
     const workingDirectory = configuration.workingDirectory
       ? this.utils.interpolate<string>(configuration.workingDirectory, context)
@@ -49,11 +64,12 @@ export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> 
     };
 
     const childProcess = spawn(
-      shell,
-      ['-c', `${command}`], {
-        stdio: undefined,
-        cwd: workingDirectory
-      });
+      shell[0],
+      shell.slice(1), {
+      stdio: undefined,
+      cwd: workingDirectory,
+      shell: os.type() === "Windows_NT" ? true : undefined
+    });
 
     const exitCondition = this.getExitCondition(childProcess, continueOnError, command, outputs);
     const inputStreams = (childProcess as any as { [name: string]: NodeJS.ReadStream })
@@ -67,7 +83,7 @@ export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> 
           return;
         }
 
-        this.utils.print(data, context.createChild({ variables: {} }), outputStream as 'stdout'|'stderr');
+        this.utils.print(data, context.createChild({ variables: {} }), outputStream as 'stdout' | 'stderr');
       });
     }
 
