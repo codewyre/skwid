@@ -103,7 +103,7 @@ export class SkwidTaskProcessor {
 
   private createUtils(): SkwidJobHandlerUtils {
     const utils = {
-      print: (data: any, _: Context, outputChannel: 'stdout'|'stderr' = 'stdout') => {
+      print: (data: any, _: Context, outputChannel: 'stdout' | 'stderr' = 'stdout') => {
         //const contextLevel = context.level;
         const prefixText = ''; // Array.from(new Array(Math.max(0, contextLevel - 3))).map(() => '   ').join('');
         (process as any)[outputChannel].write(prefixText);
@@ -129,8 +129,8 @@ export class SkwidTaskProcessor {
 
             newString = newString
               .replace(/\$\{([^\}]+)}/g,
-              (_, interpolationKey) =>
-                this.getScriptResult<string>(interpolationKey, mergedContext));
+                (_, interpolationKey) =>
+                  this.getScriptResult<string>(interpolationKey, mergedContext));
           }
 
           return newString as unknown as T;
@@ -150,7 +150,7 @@ export class SkwidTaskProcessor {
       },
       getBreadcrumbs: (context: Context) => {
         const breadCrumbs: string[] = [];
-        let currentContext: Context|undefined = context;
+        let currentContext: Context | undefined = context;
 
         while (currentContext) {
           if (currentContext?.variables?.skwidJob$?.name) {
@@ -181,6 +181,8 @@ export class SkwidTaskProcessor {
     const vm = new NodeVM({
       sandbox: {
         ...mergedContext.variables,
+        osType: require('os').type(),
+        osArch: require('os').arch(),
         resolveWith: (resolution: any) =>
           resultingValue = resolution
       }
