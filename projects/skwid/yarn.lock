@@ -201,11 +201,6 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@codewyre/skwid-contracts@^1.0.0":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@codewyre/skwid-contracts/-/skwid-contracts-1.1.1.tgz#a6d6d853e819df350621b6edace16158f33c8702"
-  integrity sha512-bOoCBE2p924GcYYaCEhXMrWcevTUNtfo9EHYhgWIlwPeYQxed6e8aUUiTs7AaeSXbGMZ8t+tyK+iu160lxpm/g==
-
 "@cspotcode/source-map-consumer@0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-consumer/-/source-map-consumer-0.8.0.tgz#33bf4b7b39c178821606f669bbc447a6a629786b"

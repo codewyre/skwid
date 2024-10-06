@@ -11,16 +11,12 @@
     "access": "public"
   },
   "scripts": {
-    "create-schema": "cp src/skwid.schema.json dist/skwid.schema.json",
-    "build": "tsc -p tsconfig.app.json && yarn create-schema && yarn _parsePackageJson",
+    "build": "tsc -p tsconfig.app.json && yarn _parsePackageJson",
     "start": "yarn build && node ./dist/index.js",
     "lint": "tslint --project tsconfig.app.json",
     "test": "jasmine-ts --config=jasmine.config.js",
     "coverage": "nyc  -x \"*.spec.ts\" -x \"jasmine.config.js\" yarn test",
-    "_parsePackageJson": "yarn __parsePackageJson1 && yarn __parsePackageJson2 && yarn __parsePackageJson3",
-    "__parsePackageJson1": "jq '.main=\"index.js\"' package.json > dist/package.json",
-    "__parsePackageJson2": "jq '.bin.skwid=\"cli.js\"' dist/package.json > dist/package1.json",
-    "__parsePackageJson3": "mv dist/package1.json dist/package.json"
+    "_parsePackageJson": "node build.js"
   },
   "dependencies": {
     "@codewyre/skwid-contracts": "^1.0.0",
