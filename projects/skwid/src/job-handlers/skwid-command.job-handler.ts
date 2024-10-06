@@ -68,7 +68,7 @@ export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> 
       shell.slice(1), {
       stdio: undefined,
       cwd: workingDirectory,
-      shell: os.type() === "Windows_NT" ? true : undefined
+      shell: os.type() === "Windows_NT" ? 'powershell.exe' : undefined
     });
 
     const exitCondition = this.getExitCondition(childProcess, continueOnError, command, outputs);
