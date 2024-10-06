@@ -114,6 +114,14 @@
             "properties": {
               "variables": {
                 "$ref": "#/definitions/SkwidVariables"
+              },
+              "level": {
+                "description": "The number of context levels to go up to define the variables. Default is 0 (current context) which means that this and all children jobs will have access to the variables. Setting `1` will mean the parent and its children, 2 the parent of the parent and its children, and so on.",
+                "type": ["string", "number"],
+                "enum": [
+                  "global"
+                ],
+                "default": 0
               }
             }
           }
@@ -177,6 +185,14 @@
       "default": "project",
       "description": "The type of this skwid project. Can be `solution` or `project`. Default is `project`",
       "type": "string"
+    },
+    "shell": {
+      "description": "The wrapping shell command to use when executing commands, e.g. using the command job. Default is `['sh', '-c', '${command}']` for unix systems, `['${command}']` for windows systems.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": "['sh', '-c', '${command}']"
     },
     "solution": {
       "$ref": "#/definitions/SkwidSolution",
