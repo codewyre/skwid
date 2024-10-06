@@ -1,6 +1,7 @@
 import { IContext, SkwidJobHandler, SkwidJobHandlerUtils, SkwidVariables } from '@codewyre/skwid-contracts';
-import { SkwidDeclareJob } from '../models/configuration/job-types/skwid-declare-job';
 import { injectable } from 'inversify';
+
+import { SkwidDeclareJob } from '../models/configuration/job-types/skwid-declare-job';
 
 @injectable()
 export class SkwidDeclareJobHandler implements SkwidJobHandler<SkwidDeclareJob> {
@@ -9,7 +10,7 @@ export class SkwidDeclareJobHandler implements SkwidJobHandler<SkwidDeclareJob> 
   //#endregion
 
   //#region Properties
-  private _utils: SkwidJobHandlerUtils|null = null;
+  private _utils: SkwidJobHandlerUtils | null = null;
   public get utils(): SkwidJobHandlerUtils {
     return this._utils!;
   }
@@ -23,8 +24,20 @@ export class SkwidDeclareJobHandler implements SkwidJobHandler<SkwidDeclareJob> 
 
   public async handleJob(configuration: SkwidDeclareJob, context: IContext): Promise<void> {
     const deeplyInterpolatedConfiguration = this.interpolate(configuration.variables, context);
+    let assignedContext = context;
+    if (configuration.level) {
+      if (configuration.level === 'global') {
+        while (assignedContext.parent) {
+          assignedContext = assignedContext.parent;
+        }
+      } else {
+        for (let level = 0; level < configuration.level; level++) {
+          assignedContext = assignedContext.parent!;
+        }
+      }
+    }
 
-    Object.assign(context.variables, deeplyInterpolatedConfiguration);
+    Object.assign(assignedContext.variables, deeplyInterpolatedConfiguration);
   }
   //#endregion
 
