@@ -210,6 +210,8 @@ tasks:
       - name: Print object value
         type: command
         command: echo '${JSON.stringify(myObject, null, 2)}'
+        env:
+          BLA_BLUB: MY ENV VAR
 
       - name: PrintArray
         type: repeat

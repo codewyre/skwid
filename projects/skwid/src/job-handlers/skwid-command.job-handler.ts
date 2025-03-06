@@ -66,10 +66,14 @@ export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> 
     const childProcess = spawn(
       shell[0],
       shell.slice(1), {
-      stdio: undefined,
-      cwd: workingDirectory,
-      shell: os.type() === "Windows_NT" ? 'powershell.exe' : undefined
-    });
+        stdio: undefined,
+        cwd: workingDirectory,
+        env: {
+          ...process.env,
+          ...configuration.env
+        },
+        shell: os.type() === "Windows_NT" ? 'powershell.exe' : undefined
+      });
 
     const exitCondition = this.getExitCondition(childProcess, continueOnError, command, outputs);
     const inputStreams = (childProcess as any as { [name: string]: NodeJS.ReadStream })

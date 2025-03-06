@@ -16,4 +16,9 @@ export interface SkwidCommandJob extends SkwidJob {
    * Shell to run the command in. Defaults to ['/bin/sh', '-c', '${command}Ä].
    */
   shell: string[];
+
+  /**
+   * Sets environment variables while running the commands
+   */
+  env: Record<string, string>;
 }
