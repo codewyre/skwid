@@ -70,7 +70,15 @@ export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> 
         cwd: workingDirectory,
         env: {
           ...process.env,
-          ...configuration.env
+          ...Object
+            .entries(configuration.env)
+            .map(([key, value]) => [
+              key,
+              this.utils.interpolate(value, context)])
+            .reduce((acc, [key, value]) => ({
+              ...acc,
+              [key]: value
+            }), {})
         },
         shell: os.type() === "Windows_NT" ? 'powershell.exe' : undefined
       });
