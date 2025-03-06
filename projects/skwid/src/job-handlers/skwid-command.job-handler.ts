@@ -74,7 +74,8 @@ export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> 
             .entries(configuration.env)
             .map(([key, value]) => [
               key,
-              this.utils.interpolate(value, context)])
+              this.utils.interpolate(value, context) as string
+            ] as [string, string])
             .reduce((acc, [key, value]) => ({
               ...acc,
               [key]: value
