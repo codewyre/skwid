@@ -71,7 +71,7 @@ export class SkwidCommandJobHandler implements SkwidJobHandler<SkwidCommandJob> 
         env: {
           ...process.env,
           ...Object
-            .entries(configuration.env)
+            .entries(configuration.env ?? {})
             .map(([key, value]) => [
               key,
               this.utils.interpolate(value, context) as string
