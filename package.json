@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "git@github.com:codewyre/skwid",
-  "author": "Marco Klein <marco.klein@trustedshops.de>",
+  "author": "Marco Klein <hobart2967@outlook.com>",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -21,6 +21,7 @@
     "cpy-cli": "^5.0.0",
     "lerna": "^6.4.1",
     "rimraf": "^6.0.1",
-    "semantic-release": "^24.0.0"
+    "semantic-release": "^24.0.0",
+    "ts-node": "^10.9.2"
   }
 }

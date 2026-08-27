@@ -157,6 +157,34 @@ tasks:
     jobs: []
 ```
 
+You can add caching to jobs. This way, tasks only run when your source files have changed. You can define it this way:
+
+At the root of your project file, define caching rules. These rules follow the gitignore-pattern and ignore files when checking for changes.
+
+Note: A `.skwid-state.json` file is automatically generated during task runs and should be added to your .gitignore. It is automatically ignored by skwid by default.
+
+```yaml
+cache:
+  ignore:
+    - node_modules/**
+    - bin
+    - out
+    - dist
+    - build
+```
+
+Then, after that being done, enable caching on the task:
+
+```yaml
+tasks:
+  build:
+    description: 'Build the project'
+    cached: true # THIS ENABLES CACHING for "build"
+    jobs:
+      - type: command
+        command: yarn build
+```
+
 ### Adding jobs to tasks
 
 Jobs consist either of `children`, or `jobs`. A job is a single part of a whole task. It can be about, e.g. setting variables, repeating something, executing a command or some other things.

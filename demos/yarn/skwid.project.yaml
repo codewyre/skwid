@@ -1,0 +1,32 @@
+type: project
+cache:
+  ignore:
+    - 'node_modules/**'
+
+tasks:
+  init:
+    jobs:
+      - type: command
+        command: yarn
+
+  build:
+    description: 'Build the project'
+    cached: true
+    jobs:
+      - type: command
+        command: yarn build
+
+  lint:
+    description: 'Lint the project'
+    jobs:
+      - type: command
+        command: yarn eslint
+
+  autofix:
+    children:
+      linting:
+        description: Runs Linting and fix errors
+        jobs:
+          - name: Run Linting and fix errors
+            type: command
+            command: yarn eslint --fix

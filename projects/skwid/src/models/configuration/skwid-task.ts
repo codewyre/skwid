@@ -19,4 +19,10 @@ export interface SkwidTask {
    * Register children for this task
    */
   children?: SkwidTaskRegistry;
+
+  /**
+   * Causes skwid to calculate a hash of the task and compare it to the last time it was run.
+   * If the hash is the same, skwid will skip running this task unless --skwid-ignore-clean is specified.
+   */
+  cached: boolean;
 }

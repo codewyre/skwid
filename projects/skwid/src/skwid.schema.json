@@ -2,6 +2,20 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
   "definitions": {
+    "SwkidCacheConfig": {
+      "type": "object",
+      "description": "Defines the cache configuration for a skwid project",
+      "additionalProperties": false,
+      "properties": {
+        "ignore": {
+          "description": "Defines a list of glob patterns to ignore when calculating the cache hash for a task. This is useful for ignoring files that are not relevant to or outputs of the task execution, such as 'node_modules/**' or '*.log'.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "SkwidSolutionProjectSource": {
       "type": "object",
       "description": "Defines a skwid project collection",
@@ -56,6 +70,10 @@
             "$ref": "#/definitions/SkwidTask"
           },
           "type": "object"
+        },
+        "cached": {
+          "description": "Causes skwid to calculate a hash of the task and compare it to the last time it was run. If the hash is the same, skwid will skip running this task unless --skwid-ignore-clean is specified.",
+          "type": "boolean"
         },
         "jobs": {
           "description": "Jobs to run when the command is run.",
@@ -204,6 +222,10 @@
       "items": {
         "type": "string"
       }
+    },
+    "cache": {
+      "$ref": "#/definitions/SwkidCacheConfig",
+      "description": "Defines the cache configuration for a skwid project"
     },
     "tasks": {
       "additionalProperties": {

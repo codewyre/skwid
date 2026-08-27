@@ -8,7 +8,7 @@
     "access": "public"
   },
   "scripts": {
-    "_clean": "rimraf dist",
+    "_clean": "rm -rf dist",
     "_compile": "tsc -p .",
     "_parsePackageJson": "node build.js",
     "build": "yarn _clean && yarn _compile && yarn _parsePackageJson"

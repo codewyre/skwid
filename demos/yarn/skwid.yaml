@@ -1,0 +1,12 @@
+type: solution
+
+solution:
+  name: 'yarn'
+  sources:
+    - type: yarn-workspace
+
+tasks:
+  init:
+    jobs:
+      - type: command
+        command: yarn

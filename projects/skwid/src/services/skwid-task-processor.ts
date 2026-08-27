@@ -2,9 +2,17 @@ import { InjectionTokens, SkwidJob, SkwidJobHandler, SkwidJobHandlerUtils } from
 import chalk from 'chalk';
 import { injectable, multiInject, optional } from 'inversify';
 import { NodeVM } from 'vm2';
+import fs from 'fs';
+import path from 'path';
+import ignore from 'ignore';
 
 import { SkwidTask } from '../models/configuration/skwid-task';
 import { Context } from '../models/context';
+import { createReadStream } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { getHashes } from 'node:crypto';
+
+type FileState = Record<string, string>;
 
 @injectable()
 export class SkwidTaskProcessor {
@@ -38,10 +46,122 @@ export class SkwidTaskProcessor {
       try {
         jobHandler.verify(job);
       } catch (innerError) {
-        const error = new Error(`Could verify configuration for job type "${job.type}".`);
+        const error = new Error(`Could not verify configuration for job type "${job.type}".`);
         (error as any).innerError = innerError;
       }
     }
+  }
+
+  private async cacheUpToDate(context: Context, utils: SkwidJobHandlerUtils): Promise<boolean> {
+    const workingDirectory = utils.interpolate<string>('${skwid$.configurationDirectory}', context);
+    if (!workingDirectory) {
+      return false;
+    }
+
+    const cacheFilePath = path.join(workingDirectory, '.skwid-state.json');
+    if (!fs.existsSync(cacheFilePath)) {
+      return false;
+    }
+
+    try {
+      const previousState: FileState = JSON.parse(
+        fs.readFileSync(cacheFilePath, 'utf-8'));
+
+      // read like gitignore file
+      const stateIgnoreEntries = this.readIgnorePatterns(context, workingDirectory);
+
+      const currentFileHashes = await this.readFileStates(
+        workingDirectory,
+        [workingDirectory],
+        stateIgnoreEntries);
+      const statedFiles = new Set(Object.keys(currentFileHashes));
+      const cachedFiles = new Set(Object.keys(previousState));
+
+      const isUnqualSize = statedFiles.size !== cachedFiles.size;
+      const cachedFilesDeleted = [...statedFiles].some(x => !cachedFiles.has(x));
+      const newFilesDetected = [...cachedFiles].some(x => !statedFiles.has(x));
+
+      if (isUnqualSize || cachedFilesDeleted || newFilesDetected) {
+        return false;
+      }
+
+      for (const filePath of Object.keys(previousState)) {
+        const hash = currentFileHashes[filePath];
+        if (!hash || hash !== previousState[filePath]) {
+          return false;
+        }
+      }
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private readIgnorePatterns(context: Context, workingDirectory: string) {
+    let stateIgnoreFile: string = '';
+
+    const stateIgnorePath = path.join(workingDirectory, '.skwid-state-ignore');
+    if (fs.existsSync(stateIgnorePath)) {
+      stateIgnoreFile = fs.readFileSync(stateIgnorePath, 'utf-8');
+    }
+
+    const stateIgnoreEntries = stateIgnoreFile
+      .split('\n')
+      .map(x => x.trim())
+      .filter(x => x.length > 0 && !x.startsWith('#'));
+
+    const ignorePatterns = this.createUtils().interpolate<string[]>('${skwid$.configuration.cache.ignore}', context);
+
+    const allIgnoreEntries = [...stateIgnoreEntries, ...ignorePatterns];
+
+    return allIgnoreEntries;
+  }
+
+  public async readFileStates(
+    workingDirectory: string,
+    fileStatesQueue: string[],
+    stateIgnoreEntries: string[],
+    results: FileState = {}): Promise<FileState> {
+
+    while (fileStatesQueue.length > 0) {
+      const currentPath = fileStatesQueue.pop()!;
+      const relativePath: string = path.relative(workingDirectory, currentPath);
+      if (relativePath) {
+        const ig = ignore().add([...stateIgnoreEntries, '.skwid-state.json']);
+        const { ignored } = ig.test(relativePath);
+        if (ignored) {
+          continue;
+        }
+      }
+
+      const stat = fs.statSync(currentPath);
+      if (stat.isDirectory()) {
+        const childFiles = fs.readdirSync(currentPath)
+          .map(x => path.join(currentPath, x));
+        fileStatesQueue.push(...childFiles);
+      } else if (stat.isFile()) {
+        results[relativePath] = await this.hashFile(currentPath);
+      }
+    }
+    return results;
+  }
+
+  public async hashFile(filePath: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      // xxhash64 is vastly faster than md5 or sha256 for integrity checks
+      const availableHashingMethods = getHashes();
+      const hash = createHash(
+        availableHashingMethods.includes('xxhash64')
+          ? 'xxhash64'
+          : 'md5');
+
+      const stream = createReadStream(filePath);
+
+      stream.on('data', (chunk) => hash.update(chunk));
+      stream.on('end', () => resolve(hash.digest('hex')));
+      stream.on('error', (err) => reject(err));
+    });
   }
 
   public async processTask(task: SkwidTask, context: Context): Promise<void> {
@@ -50,7 +170,33 @@ export class SkwidTaskProcessor {
       return;
     }
 
+    const utils = this.createUtils();
+    const ignoreCache = utils.interpolate<boolean>('${skwid$.ignoreCache}', context);
+
+    if (task.cached && !ignoreCache) {
+      const isCacheUpToDate = await this.cacheUpToDate(context, utils);
+
+      if (isCacheUpToDate) {
+        this.createUtils().print(
+          chalk.yellow(`\n☢ Skipping task as it is cached and up to date.\n\n`),
+          context);
+        return;
+      }
+    }
+
     await this.processJobs(task.jobs, context);
+
+    const workingDirectory = utils.interpolate<string>('${skwid$.configurationDirectory}', context);
+    const fileStates = await this.readFileStates(
+      workingDirectory,
+      [workingDirectory],
+      this.readIgnorePatterns(context, workingDirectory));
+
+    const cacheFilePath = path.join(
+      utils.interpolate<string>('${skwid$.configurationDirectory}', context),
+      '.skwid-state.json');
+
+    fs.writeFileSync(cacheFilePath, JSON.stringify(fileStates, null, 2));
   }
   //#endregion
 
