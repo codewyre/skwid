@@ -4,15 +4,27 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-{
+    {
       "type": "node",
       "request": "launch",
-      "name": "Debug CLI (ts-node)",
+      "name": "Launch for solution",
       "skipFiles": ["<node_internals>/**"],
       "runtimeArgs": ["-r", "${workspaceFolder}/node_modules/ts-node/register"],
       "program": "${workspaceFolder}/projects/skwid/src/cli.ts",
       "preLaunchTask": "npm: build",
-      "args": ["build"],
+      "args": ["solution", "run", "build", "--no-cache"],
+      "cwd": "${workspaceFolder}/demos/yarn",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch for project",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeArgs": ["-r", "${workspaceFolder}/node_modules/ts-node/register"],
+      "program": "${workspaceFolder}/projects/skwid/src/cli.ts",
+      "preLaunchTask": "npm: build",
+      "args": ["build", "--no-cache"],
       "cwd": "${workspaceFolder}/demos/yarn/projects/project-a",
       "console": "integratedTerminal"
     }

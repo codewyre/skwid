@@ -155,20 +155,26 @@ export class SkwidTaskProcessor {
     });
   }
 
-  public async processTask(task: SkwidTask, context: Context): Promise<void> {
+  public async processTask(task: SkwidTask, context: Context, options: Record<string, any>): Promise<void> {
     if (!task.jobs || !Array.isArray(task.jobs)) {
       // TODO: Implement Log Service and print warning about jobs that were empty
       return;
     }
 
+    const cache: boolean = options?.cache ?? true;
     const utils = this.createUtils();
-    const ignoreCache = utils.interpolate<boolean>('${skwid$.ignoreCache}', context);
 
-    if (task.cached && !ignoreCache) {
+    if (!cache && !task.cached) {
+      utils.print(
+        chalk.yellow(`\nWarning: Task is not cached, so there's no reason to skip the cache with --no-cache\n\n`),
+        context);
+    }
+
+    if (task.cached && cache) {
       const isCacheUpToDate = await this.cacheUpToDate(context, utils);
 
       if (isCacheUpToDate) {
-        this.createUtils().print(
+        utils.print(
           chalk.yellow(`\n☢ Skipping task as it is cached and up to date.\n\n`),
           context);
         return;

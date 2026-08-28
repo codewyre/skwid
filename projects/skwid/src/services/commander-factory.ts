@@ -61,13 +61,13 @@ export class CommanderFactory {
     solution
       .command('run')
       .argument('<task>')
+      .option('-nc, --no-cache', 'Run without using cached results', true)
       .option('-s, --silent', 'Run silently', false)
       .description('execute the specified task per each project found in a dependency-aware order.')
       .action(async (...args) => {
-
         const { processedArgs: runArgs }: Command = args.at(-1);
-        const { silent } = args.at(-2);
-        this._solutionJobHandler.handleJob('run', silent, ...runArgs);
+        const { silent, cache } = args.at(-2);
+        this._solutionJobHandler.handleJob('run', silent, ...(runArgs.concat(cache ? [] : ['--no-cache'])));
       });
 
     solution
@@ -112,6 +112,8 @@ export class CommanderFactory {
   private parseCommandConfiguration(name: string, configuration: SkwidTask, parent: ParsedSkwidTask, context: Context): Command {
     const subCommand = new Command(name);
 
+    subCommand.option('--no-cache', 'Run without using cached results', true);
+
     if (configuration.description) {
       subCommand.description(configuration.description);
     }
@@ -132,9 +134,10 @@ export class CommanderFactory {
     this._taskProcessor
       .verifyConfiguration(configuration);
 
-    subCommand.action(async () => {
+    subCommand.action(async (...args) => {
       try {
-        await this.processSkwidTask(configuration, context);
+        const [options] = args;
+        await this._taskProcessor.processTask(configuration, context, options);
       } catch (error) {
         const isDebug = this._processInfo.argv.includes('--debug');
         console.log(chalk.red(`An error occurred when running task "${allParents.join(' ').trim()} ${name}":
@@ -157,10 +160,6 @@ export class CommanderFactory {
 
 
     return subCommand;
-  }
-
-  private processSkwidTask(configuration: SkwidTask, context: Context): Promise<void> {
-    return this._taskProcessor.processTask(configuration, context);
   }
   //#endregion
 }
