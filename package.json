@@ -23,5 +23,8 @@
     "rimraf": "^6.0.1",
     "semantic-release": "^24.0.0",
     "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.3"
   }
 }

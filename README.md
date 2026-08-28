@@ -159,7 +159,7 @@ tasks:
 
 You can add caching to jobs. This way, tasks only run when your source files have changed. You can define it this way:
 
-At the root of your project file, define caching rules. These rules follow the gitignore-pattern and ignore files when checking for changes.
+At the root of your project file, define caching rules. These rules follow the globbing-pattern and ignore files when checking for changes.
 
 Note: A `.skwid-state.json` file is automatically generated during task runs and should be added to your .gitignore. It is automatically ignored by skwid by default.
 

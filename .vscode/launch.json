@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Debug CLI (ts-node)",
       "skipFiles": ["<node_internals>/**"],
-      "runtimeArgs": ["-r", "ts-node/register"],
+      "runtimeArgs": ["-r", "${workspaceFolder}/node_modules/ts-node/register"],
       "program": "${workspaceFolder}/projects/skwid/src/cli.ts",
       "preLaunchTask": "npm: build",
       "args": ["build"],

@@ -4,13 +4,13 @@ import { injectable, multiInject, optional } from 'inversify';
 import { NodeVM } from 'vm2';
 import fs from 'fs';
 import path from 'path';
-import ignore from 'ignore';
 
 import { SkwidTask } from '../models/configuration/skwid-task';
 import { Context } from '../models/context';
 import { createReadStream } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { getHashes } from 'node:crypto';
+import fg from 'fast-glob';
 
 type FileState = Record<string, string>;
 
@@ -72,7 +72,6 @@ export class SkwidTaskProcessor {
 
       const currentFileHashes = await this.readFileStates(
         workingDirectory,
-        [workingDirectory],
         stateIgnoreEntries);
       const statedFiles = new Set(Object.keys(currentFileHashes));
       const cachedFiles = new Set(Object.keys(previousState));
@@ -120,30 +119,22 @@ export class SkwidTaskProcessor {
 
   public async readFileStates(
     workingDirectory: string,
-    fileStatesQueue: string[],
     stateIgnoreEntries: string[],
-    results: FileState = {}): Promise<FileState> {
-
-    while (fileStatesQueue.length > 0) {
-      const currentPath = fileStatesQueue.pop()!;
-      const relativePath: string = path.relative(workingDirectory, currentPath);
-      if (relativePath) {
-        const ig = ignore().add([...stateIgnoreEntries, '.skwid-state.json']);
-        const { ignored } = ig.test(relativePath);
-        if (ignored) {
-          continue;
-        }
-      }
-
-      const stat = fs.statSync(currentPath);
-      if (stat.isDirectory()) {
-        const childFiles = fs.readdirSync(currentPath)
-          .map(x => path.join(currentPath, x));
-        fileStatesQueue.push(...childFiles);
-      } else if (stat.isFile()) {
-        results[relativePath] = await this.hashFile(currentPath);
-      }
-    }
+    results: FileState = {}
+  ): Promise<FileState> {
+    const files = await fg('**/*', {
+      cwd: workingDirectory,
+      ignore: [...stateIgnoreEntries, '.skwid-state.json'],
+      dot: true,
+      onlyFiles: true,
+      followSymbolicLinks: true
+    });
+    await Promise.all(
+      files.map(async (relativePath) => {
+        const fullPath = path.join(workingDirectory, relativePath);
+        results[relativePath] = await this.hashFile(fullPath);
+      })
+    );
     return results;
   }
 
@@ -189,7 +180,6 @@ export class SkwidTaskProcessor {
     const workingDirectory = utils.interpolate<string>('${skwid$.configurationDirectory}', context);
     const fileStates = await this.readFileStates(
       workingDirectory,
-      [workingDirectory],
       this.readIgnorePatterns(context, workingDirectory));
 
     const cacheFilePath = path.join(
